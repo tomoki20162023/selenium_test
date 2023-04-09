@@ -1,0 +1,8 @@
+{
+	"chrome": {
+		"driverpath": "C:\\Tools\\selenium\\chromedriver_win32\\112_0_5615_49\\chromedriver.exe"
+	},
+	"edge": {
+		"driverpath": "C:\\Tools\\selenium\\edgedriver_win64\\91_0_864_54\\msedgedriver.exe"
+	}
+}

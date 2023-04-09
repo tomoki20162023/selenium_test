@@ -1,0 +1,4 @@
+loggerSetting global scope.
+my test 001 global scope.
+TypeError("'NoneType' object is not subscriptable")
+test finished.

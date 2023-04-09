@@ -1,0 +1,8 @@
+# folders
+bin/
+Lib/
+Scripts/
+__pycache__/
+
+# files
+*.png
