@@ -92,6 +92,8 @@ class MainTest(ut.TestCase):
 		self.assertTrue(main())
 
 def wholeTestSuite():
+	suites = []
+
 	testmods = [
 		test001,
 		test002,
@@ -102,11 +104,16 @@ def wholeTestSuite():
 		print(mod.__name__)
 		mod.init(rootLogger.getChild(mod.__name__))
 
-	suite = ut.TestSuite()
-	suite.addTest(MainTest('test_main'))
+	# suite = ut.TestSuite()
+	# suite.addTest(MainTest('test_main'))
+	# suites.append(suite)
 	for mod in testmods:
-		suite.addTest(mod.getSuite())
-	return suite
+		suite = ut.TestSuite()
+		tests = ut.defaultTestLoader.loadTestsFromModule(mod)
+		suite.addTests(tests)
+		suites.append(suite)
+		# suite.addTest(mod.getSuite())
+	return suites
 
 if __name__ == "__main__":
 	import doctest
@@ -120,8 +127,30 @@ if __name__ == "__main__":
 	if gSeleniumSetting is None:
 		exit(2)
 
-	runner = ut.TextTestRunner()
-	runner.run(wholeTestSuite())
+
+	class CustomTestResult(ut.TextTestResult):
+
+		def addSuccess(self, test):
+			super().addSuccess(test)
+			print("custom add success.")
+
+	import sys
+	result = CustomTestResult(sys.stderr, False, 2)
+	runner = ut.TextTestRunner(descriptions=False, verbosity=1)
+	# ut.main(verbosity=2)
+
+	suites = wholeTestSuite()
+	for suite in suites:
+		# suite.run(result)
+		result = runner.run(suite)
+		# pprint(result)
+		pprint({
+			'run': result.testsRun,
+			'failure': len(result.failures),
+			'errors': len(result.errors)
+		})
+
+	# pprint(dir(result))
 
 """
 	テスト

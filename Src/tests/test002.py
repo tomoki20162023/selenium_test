@@ -1,4 +1,5 @@
 import unittest as ut
+from unittest.mock import call, Mock, MagicMock, patch
 
 gLogger = None
 
@@ -20,6 +21,9 @@ class Test002(ut.TestCase):
 
 	def setUp(self):
 		# logger.debug("Test002 setup.")
+		self.driver = MagicMock()
+		self.driver.add_spec('dummy')
+		self.driver.dummy = True
 		pass
 
 	def tearDown(self):
@@ -29,6 +33,7 @@ class Test002(ut.TestCase):
 	def test_001_test002_1(self):
 		self.assertTrue(True)
 		self.assertFalse(False)
+		self.assertTrue(self.driver.dummy)
 
 	def test_002_sample_2(self):
 		self.assertTrue(True)
