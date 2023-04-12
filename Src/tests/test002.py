@@ -1,6 +1,7 @@
 import unittest as ut
 from unittest.mock import call, Mock, MagicMock, patch
 
+gName = "test002"
 gLogger = None
 
 class Test002(ut.TestCase):
@@ -9,15 +10,14 @@ class Test002(ut.TestCase):
 
 	@classmethod
 	def setUpClass(cls):
-		global gLogger
 		cls.logger = gLogger
 		print("")
-		logger.debug("class test002 setup")
+		cls.logger.debug("class test002 setup")
 
 	@classmethod
 	def tearDownClass(cls):
 		print("")
-		logger.debug("class test002 teardown")
+		cls.logger.debug("class test002 teardown")
 
 	def setUp(self):
 		# logger.debug("Test002 setup.")
@@ -55,9 +55,9 @@ class Test002(ut.TestCase):
 		self.assertFalse(False)
 
 def init(_logger):
-	global logger
-	_logger.debug("test002 init, setup logger.")
-	logger = _logger
+	global gLogger
+	_logger.debug("{} init, setup logger.".format(gName))
+	gLogger = _logger
 
 def getSuite():
 	suite = ut.TestSuite()
