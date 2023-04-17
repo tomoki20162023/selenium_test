@@ -102,17 +102,25 @@ def wholeTestSuite():
 	rootLogger = gLoggers['root']
 	for mod in testmods:
 		print(mod.__name__)
-		mod.init(rootLogger.getChild(mod.__name__))
+		mod.init(rootLogger.getChild(mod.__name__.split('.')[-1]))
 
 	# suite = ut.TestSuite()
 	# suite.addTest(MainTest('test_main'))
 	# suites.append(suite)
 	for mod in testmods:
 		suite = ut.TestSuite()
-		tests = ut.defaultTestLoader.loadTestsFromModule(mod)
-		suite.addTests(tests)
+		tests1 = ut.defaultTestLoader.loadTestsFromModule(mod)
+		if not tests1 is None:
+			suite.addTests(tests1)
+
+		tests2 = mod.getSuite()
+		if not tests2 is None:
+			suite.addTests(tests2)
+
 		suites.append(suite)
+
 		# suite.addTest(mod.getSuite())
+
 	return suites
 
 if __name__ == "__main__":

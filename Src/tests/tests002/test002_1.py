@@ -1,7 +1,7 @@
 import unittest as ut
 from unittest.mock import call, Mock, MagicMock, patch
 
-gName = "test001_2"
+gName = "test002_1"
 gLogger = None
 
 
@@ -12,7 +12,7 @@ def tearDownModule():
 	pass
 
 class Test002_1(ut.TestCase):
-	name = "Test001_1"
+	name = "Test002_1"
 	logger = None
 	dependent = dict()
 

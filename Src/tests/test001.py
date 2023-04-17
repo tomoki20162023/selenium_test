@@ -1,6 +1,8 @@
 import unittest as ut
 from unittest.mock import call, Mock, MagicMock, patch
 
+from .tests001 import test001_1
+
 gName = "test001"
 gLogger = None
 
@@ -105,6 +107,26 @@ class Test001(ut.TestCase):
 		self.assertEqual(mock.dragon.call_args[0][0], 'Appeared!')
 		self.assertEqual(mock(), 3)
 		self.assertTrue(mock.call_dragon)
+
+def getSuite():
+	suites = []
+
+	testmods = [
+		test001_1,
+	]
+
+	rootLogger = gLogger
+	for mod in testmods:
+		print(mod.__name__)
+		mod.init(rootLogger.getChild(mod.__name__.split('.')[-1]))
+
+	for mod in testmods:
+		suite = ut.TestSuite()
+		tests = ut.defaultTestLoader.loadTestsFromModule(mod)
+		suite.addTests(tests)
+		suites.append(suite)
+		# suite.addTest(mod.getSuite())
+	return suites
 
 def init(_logger):
 	global gLogger

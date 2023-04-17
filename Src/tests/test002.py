@@ -1,6 +1,9 @@
 import unittest as ut
 from unittest.mock import call, Mock, MagicMock, patch
 
+from tests.tests002 import test002_1
+from my.test001 import MyLib
+
 gName = "test002"
 gLogger = None
 
@@ -43,8 +46,18 @@ class Test002(ut.TestCase):
 		self.assertTrue(True)
 		self.dependent['append_3'] = True
 
-	def test_004_sample_4(self):
-		self.assertTrue(True)
+	@patch("my.test001.MyLib.instVal")
+	@patch("my.test001.MyLib.clsVal")
+	@patch("my.test001.MyLib.staVal")
+	def test_004_sample_4(self, pstaVal, pclsVal, pinstVal):
+		pstaVal.return_value = "dummy"
+		pclsVal.return_value = 7
+		pinstVal.return_value = 99
+
+		lib = MyLib()
+		self.assertEqual(MyLib.staVal(), "dummy")
+		self.assertEqual(lib.clsVal(), 7)
+		self.assertEqual(lib.instVal(), 99)
 
 	def test_005_append_5(self):
 		if not self.dependent['append_3']:
@@ -54,17 +67,30 @@ class Test002(ut.TestCase):
 		self.assertFalse(False)
 		self.assertFalse(False)
 
+def getSuite():
+	suites = []
+
+	testmods = [
+		test002_1,
+	]
+
+	rootLogger = gLogger
+	for mod in testmods:
+		print(mod.__name__)
+		mod.init(rootLogger.getChild(mod.__name__.split('.')[-1]))
+
+	for mod in testmods:
+		suite = ut.TestSuite()
+		tests = ut.defaultTestLoader.loadTestsFromModule(mod)
+		suite.addTests(tests)
+		suites.append(suite)
+		# suite.addTest(mod.getSuite())
+	return suites
+
 def init(_logger):
 	global gLogger
 	_logger.debug("{} init, setup logger.".format(gName))
 	gLogger = _logger
-
-def getSuite():
-	suite = ut.TestSuite()
-	for testcase in dir(Test002):
-		if testcase.startswith("test_"):
-			suite.addTest(Test002(testcase))
-	return suite
 
 def main():
 	pass
