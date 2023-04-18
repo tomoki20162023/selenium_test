@@ -1,11 +1,23 @@
+from pprint import pprint
+
 import unittest as ut
 from unittest.mock import call, Mock, MagicMock, patch
 
+# ライブラリを使ったテストの構築
 from tests.tests002 import test002_1
+
+# ライブラリのテスト
 from my.test001 import MyLib
 
 gName = "test002"
 gLogger = None
+
+def setUpModule():
+	pass
+
+
+def tearDownModule():
+	pass
 
 class Test002(ut.TestCase):
 	logger = None
@@ -27,11 +39,15 @@ class Test002(ut.TestCase):
 		self.driver = MagicMock()
 		self.driver.add_spec('dummy')
 		self.driver.dummy = True
+		self.test_lambda_1()
 		pass
 
 	def tearDown(self):
 		# logger.debug("Test002 teardown.")
 		pass
+
+	def core_test(self, n):
+		self.assertEqual(n, n)
 
 	def test_001_test002_1(self):
 		self.assertTrue(True)
@@ -91,6 +107,9 @@ def init(_logger):
 	global gLogger
 	_logger.debug("{} init, setup logger.".format(gName))
 	gLogger = _logger
+
+	for n in range(10):
+		setattr(Test002, "test_lambda_%d" % n, lambda self: Test002.core_test(self, n))
 
 def main():
 	pass
