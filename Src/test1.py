@@ -6,15 +6,13 @@ from datetime import datetime
 import unittest as ut
 
 import loggerSetting
-from my.seleniumBaseEnv import *
-from my.testViewer import *
+
+from my.testViewer import TestViewer
 
 from tests import test001
 from tests import test002
 
-gSeleniumSetting = None
 gLoggers = None
-
 
 def exec_script(_driver):
 	_driver.execute_script("alert('test selenium inner javascript')")
@@ -131,10 +129,6 @@ if __name__ == "__main__":
 	if gLoggers is None:
 		exit(1)
 
-	gSeleniumSetting = loadSeleniumSetting()
-	if gSeleniumSetting is None:
-		exit(2)
-
 
 	class CustomTestResult(ut.TextTestResult):
 
@@ -142,11 +136,11 @@ if __name__ == "__main__":
 			super().addSuccess(test)
 			print("custom add success.")
 
-	import sys
 	result = CustomTestResult(sys.stderr, False, 2)
 	runner = ut.TextTestRunner(descriptions=False, verbosity=1)
 	# ut.main(verbosity=2)
 
+"""
 	suites = wholeTestSuite()
 	for suite in suites:
 		# suite.run(result)
@@ -157,8 +151,7 @@ if __name__ == "__main__":
 			'failure': len(result.failures),
 			'errors': len(result.errors)
 		})
-
-	# pprint(dir(result))
+"""
 
 """
 	テスト

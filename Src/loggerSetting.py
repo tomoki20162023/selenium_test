@@ -3,7 +3,7 @@ import yaml
 import logging
 import logging.config
 
-print("loggerSetting global scope.")
+from pprint import pprint
 
 def loadLogger():
 	try:
