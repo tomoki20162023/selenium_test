@@ -2,6 +2,15 @@ class TestViewer:
 	def __init__(self, _driver):
 		self.driver = _driver
 
+	def showAllSiteInfo(self):
+		self.show_site_info()
+
+		ws = self.driver.get_window_size()
+		self.show_window_size(ws)
+
+		wp = self.driver.get_window_position()
+		self.show_window_position(wp)
+
 	def show_site_info(self):
 		print("\n# site info")
 		print("  - current URL = " + self.driver.current_url)

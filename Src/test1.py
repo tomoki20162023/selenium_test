@@ -1,4 +1,5 @@
 from pprint import pprint
+import os
 import json
 import time
 import pathlib
@@ -22,6 +23,64 @@ def document_initialized(driver):
 	print("result is {}".format(result))
 	return result
 
+def getNowDatetimeStr():
+	return datetime.today().strftime("%Y%m%d-%H%M%S")
+
+class ImageHolder:
+
+	def __init__(root, folders=None, filename=None, suffix=None):
+		self.root = root
+		self.folders = folders
+		self.filename = filename
+		self.suffix = suffix
+
+	def getpath(self):
+		p = self.root
+		p += os.sep + os.sep.join(self.folders)
+		p += os.sep + self.filenamea + self.suffix
+		return p
+
+def getImagePath(root, holder, prefix, name, suffix):
+	# now root is ignored.
+	capturePath = holder + "/" + prefix + name + suffix
+	return capturePath
+
+def sampleDriverTest(driver):
+	tv = TestViewer(driver)
+
+	#print("DOMの読み込み完了待機中")
+	#driver.implicitly_wait(1)
+	#print("DOMの読み込み完了")
+
+	driver.get(test_url)
+	print("check text element")
+	WebDriverWait(driver, timeout=10).until(document_initialized)
+	el = driver.find_element(By.TAG_NAME, "p")
+	tv.show_element(el)
+	assert el.text == "hello from javascript."
+	# print("clear assert check")
+	nowStr = getNowDatetimeStr()
+	testFolder = nowStr.replace('-', '')
+	holder = 'img'
+	prefix = 'test-img-'
+	name = nowStr
+	suffix = '.png'
+	capturePath = getImagePath(testFolder, holder, prefix, name, suffix)
+	driver.get_screenshot_as_file(capturePath)
+
+
+	tv.showAllSiteInfo()
+
+	# css = driver.find_element(By.CSS_SELECTOR, "#tabs-1-1-tab")
+	# tv.show_element(css)
+
+	print("終了前　5秒待機")
+	time.sleep(2)
+	print("終了前　待機終了")
+
+	return True
+
+
 def main():
 	try:
 		result = False
@@ -36,39 +95,9 @@ def main():
 			if driver is None:
 				raise Exception("Error: not init driver.")
 
-			tv = TestViewer(driver)
-
-			#print("DOMの読み込み完了待機中")
-			#driver.implicitly_wait(1)
-			#print("DOMの読み込み完了")
-
-			driver.get(test_url)
-			print("check text element")
-			WebDriverWait(driver, timeout=10).until(document_initialized)
-			el = driver.find_element(By.TAG_NAME, "p")
-			tv.show_element(el)
-			assert el.text == "hello from javascript."
-			# print("clear assert check")
-			now = datetime.today()
-			capturePath = "img/test-img-{}.png".format(now.strftime("%Y%m%d-%H%M%S"))
-			driver.get_screenshot_as_file(capturePath)
-
-			tv.show_site_info()
-
-			# css = driver.find_element(By.CSS_SELECTOR, "#tabs-1-1-tab")
-			# tv.show_element(css)
-
-			ws = driver.get_window_size()
-			tv.show_window_size(ws)
-
-			wp = driver.get_window_position()
-			tv.show_window_position(wp)
-
-			print("終了前　5秒待機")
-			time.sleep(2)
-			print("終了前　待機終了")
-
-			result = True
+			result = sampleDriverTest(driver)
+			if result is None:
+				result = False
 
 	except Exception as e:
 		pprint(e)
