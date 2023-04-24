@@ -1,8 +1,10 @@
 from pprint import pprint
+
 import os
+import sys
 import json
 import time
-import pathlib
+from pathlib import Path
 from datetime import datetime
 import unittest as ut
 
@@ -26,24 +28,39 @@ def document_initialized(driver):
 def getNowDatetimeStr():
 	return datetime.today().strftime("%Y%m%d-%H%M%S")
 
-class ImageHolder:
+class ImageHolder():
 
-	def __init__(root, folders=None, filename=None, suffix=None):
+	def __init__(self, root, folders=None, filename=None, suffix=None):
 		self.root = root
 		self.folders = folders
 		self.filename = filename
 		self.suffix = suffix
 
-	def getpath(self):
-		p = self.root
-		p += os.sep + os.sep.join(self.folders)
-		p += os.sep + self.filenamea + self.suffix
+	def getPath(self):
+		p = self.getFolder()
+		p += os.sep + self.filename + self.suffix
 		return p
 
-def getImagePath(root, holder, prefix, name, suffix):
-	# now root is ignored.
-	capturePath = holder + "/" + prefix + name + suffix
-	return capturePath
+	def getFolder(self):
+		p = self.root
+		p += os.sep + os.sep.join(self.folders)
+		return p
+
+	def exists(self):
+		p = Path(self.getFolder())
+		if p.exists(): return True
+
+	def mkdir(self):
+		p = Path(self.root)
+		if not p.exists():
+			raise FileNotFoundError("存在するルートパスが必要です。")
+
+		for f in self.folders:
+			p = p / f
+			if p.exists():
+				continue
+			else:
+				p.mkdir()
 
 def sampleDriverTest(driver):
 	tv = TestViewer(driver)
@@ -59,14 +76,8 @@ def sampleDriverTest(driver):
 	tv.show_element(el)
 	assert el.text == "hello from javascript."
 	# print("clear assert check")
-	nowStr = getNowDatetimeStr()
-	testFolder = nowStr.replace('-', '')
-	holder = 'img'
-	prefix = 'test-img-'
-	name = nowStr
-	suffix = '.png'
-	capturePath = getImagePath(testFolder, holder, prefix, name, suffix)
-	driver.get_screenshot_as_file(capturePath)
+	capturePath = "/mnt/p/captures/img/section/{}/"
+	# driver.get_screenshot_as_file(capturePath)
 
 
 	tv.showAllSiteInfo()
@@ -90,6 +101,28 @@ def main():
 			"file:///E:/programs/html/bootstrap/sample/index.html",
 		]
 		test_url = test_urls[testNo]
+
+		print("# test image holder 1")
+		nowStr = getNowDatetimeStr()
+		testFolder = "." # nowStr.replace('-', '')
+		prefix = "test-img-{}"
+		filename = prefix.format(nowStr)
+		holder = ImageHolder(testFolder, ["img", "samples"], filename, ".png")
+		print("path is : " + holder.getPath())
+		print("holder fields?")
+		print("filename = " + holder.filename)
+		if not holder.exists():
+			holder.mkdir()
+
+		print("# test image holder 2")
+		holder.root = "./dummy"
+		print("path is : " + holder.getPath())
+		print("holder fields?")
+		print("filename = " + holder.filename)
+		if not holder.exists():
+			holder.mkdir()
+
+		return False
 
 		with getDriver(BROWSER_CHROME) as driver:
 			if driver is None:
@@ -168,6 +201,8 @@ if __name__ == "__main__":
 	result = CustomTestResult(sys.stderr, False, 2)
 	runner = ut.TextTestRunner(descriptions=False, verbosity=1)
 	# ut.main(verbosity=2)
+
+	main()
 
 """
 	suites = wholeTestSuite()
