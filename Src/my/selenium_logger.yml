@@ -1,0 +1,19 @@
+version: 1
+formatters:
+  seleniumformat:
+    format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: seleniumformat
+    stream: ext://sys.stderr
+loggers:
+  seleniumLogger:
+    level: DEBUG
+    handlers: [console]
+    propagate: no
+root:
+  level: DEBUG
+  handlers: [console]
+

@@ -26,6 +26,7 @@ def loadSeleniumSetting():
 	try:
 		with open(setting_path, 'r') as f:
 			env['seleniumSetting'] = json.load(f)
+
 	except JSONDecodeError as e:
 		print(e)
 		return None
@@ -33,6 +34,9 @@ def loadSeleniumSetting():
 	return env['seleniumSetting']
 
 def getDriver(_target):
+	if 'seleniumSetting' not in env:
+		loadSeleniumSetting()
+
 	driver = None
 	platforms = ["ubuntu", "windows"]
 	browsers = ["chrome", "edge"]

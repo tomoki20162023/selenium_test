@@ -39,6 +39,13 @@ class CustomDriverTest(ut.TestCase):
 		self.assertIsNotNone(self.customDriver.driver)
 		time.sleep(3)
 
+	def test_003_login(self):
+		self.customDriver.login("user", "****", None)
+
+	def test_004_logout(self):
+		self.customDriver.logout()
+
+
 def main():
 	pass
 

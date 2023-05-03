@@ -41,6 +41,11 @@ class CustomDriver:
 	def __init__(self):
 		pass
 
+	def login(self, user, password, tag):
+		self.logger.info("login : user = {}, password = {}, tag = {}".format(user, password, tag))
+
+	def logout(self):
+		self.logger.info("logout : run logout command.")
 
 def main():
 	dummy()

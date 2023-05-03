@@ -10,7 +10,14 @@ import unittest as ut
 
 import loggerSetting
 
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver import ActionChains
+
 from my.testViewer import TestViewer
+from my.imageHolder import ImageHolder
+from my.seleniumBaseEnv import loadSeleniumSetting, getDriver, BROWSER_CHROME
 
 from tests import test001
 from tests import test002
@@ -21,6 +28,7 @@ def exec_script(_driver):
 	_driver.execute_script("alert('test selenium inner javascript')")
 
 def document_initialized(driver):
+	print("wait document initialized.")
 	result = driver.execute_script("return app_initialized")
 	print("result is {}".format(result))
 	return result
@@ -28,57 +36,58 @@ def document_initialized(driver):
 def getNowDatetimeStr():
 	return datetime.today().strftime("%Y%m%d-%H%M%S")
 
-class ImageHolder():
-
-	def __init__(self, root, folders=None, filename=None, suffix=None):
-		self.root = root
-		self.folders = folders
-		self.filename = filename
-		self.suffix = suffix
-
-	def getPath(self):
-		p = self.getFolder()
-		p += os.sep + self.filename + self.suffix
-		return p
-
-	def getFolder(self):
-		p = self.root
-		p += os.sep + os.sep.join(self.folders)
-		return p
-
-	def exists(self):
-		p = Path(self.getFolder())
-		if p.exists(): return True
-
-	def mkdir(self):
-		p = Path(self.root)
-		if not p.exists():
-			raise FileNotFoundError("存在するルートパスが必要です。")
-
-		for f in self.folders:
-			p = p / f
-			if p.exists():
-				continue
-			else:
-				p.mkdir()
-
-def sampleDriverTest(driver):
-	tv = TestViewer(driver)
-
-	#print("DOMの読み込み完了待機中")
-	#driver.implicitly_wait(1)
-	#print("DOMの読み込み完了")
-
-	driver.get(test_url)
+def sampleAction1(driver, tv):
 	print("check text element")
 	WebDriverWait(driver, timeout=10).until(document_initialized)
 	el = driver.find_element(By.TAG_NAME, "p")
 	tv.show_element(el)
 	assert el.text == "hello from javascript."
 	# print("clear assert check")
-	capturePath = "/mnt/p/captures/img/section/{}/"
+	# capturePath = "/mnt/p/captures/img/section/{}/"
 	# driver.get_screenshot_as_file(capturePath)
+	time.sleep(2)
 
+def sampleAction2(driver):
+	try:
+		print("file upload action")
+		ff = driver.find_element(By.ID, "formfile")
+		# 実在するファイルのフルパスをフォームに送ってやると入力可能
+		ff.send_keys("C:\\Windows\\write.exe")
+
+		print(ff)
+		print("find element")
+
+			# .click(formfile)\
+		#ActionChains(driver)\
+		#	.send_keys("C:/Users/tom71/macros.ini")\
+		#	.perform()
+		print("click element and select file")
+
+	except Exception as e:
+		print("raised exception")
+		print(e)
+
+	# action = ActionChains(driver).send_keys("sample-file.txt").perform()
+	time.sleep(3)
+
+def sampleDriverTest(driver):
+	tv = TestViewer(driver)
+
+	testNo = 1
+	test_urls = [
+		"https://www.selenium.dev/documentation/ja/webdriver/browser_manipulation/",
+		"file:///E:/programs/html/bootstrap/sample/index.html",
+	]
+	test_url = test_urls[testNo]
+
+	#print("DOMの読み込み完了待機中")
+	#driver.implicitly_wait(1)
+	#print("DOMの読み込み完了")
+
+	driver.get(test_url)
+
+	sampleAction1(driver, tv)
+	sampleAction2(driver)
 
 	tv.showAllSiteInfo()
 
@@ -95,34 +104,7 @@ def sampleDriverTest(driver):
 def main():
 	try:
 		result = False
-		testNo = 1
-		test_urls = [
-			"https://www.selenium.dev/documentation/ja/webdriver/browser_manipulation/",
-			"file:///E:/programs/html/bootstrap/sample/index.html",
-		]
-		test_url = test_urls[testNo]
-
-		print("# test image holder 1")
-		nowStr = getNowDatetimeStr()
-		testFolder = "." # nowStr.replace('-', '')
-		prefix = "test-img-{}"
-		filename = prefix.format(nowStr)
-		holder = ImageHolder(testFolder, ["img", "samples"], filename, ".png")
-		print("path is : " + holder.getPath())
-		print("holder fields?")
-		print("filename = " + holder.filename)
-		if not holder.exists():
-			holder.mkdir()
-
-		print("# test image holder 2")
-		holder.root = "./dummy"
-		print("path is : " + holder.getPath())
-		print("holder fields?")
-		print("filename = " + holder.filename)
-		if not holder.exists():
-			holder.mkdir()
-
-		return False
+		# nowStr = getNowDatetimeStr()
 
 		with getDriver(BROWSER_CHROME) as driver:
 			if driver is None:
